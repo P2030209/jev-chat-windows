@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-a855f7?style=for-the-badge&logo=windows11&logoColor=white" alt="Windows 10/11">
   <img src="https://img.shields.io/badge/Python-3.10%20~%203.12-f472b6?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10-3.12">
   <img src="https://img.shields.io/badge/UI-PySide6%20%2B%20Fluent-38bdf8?style=for-the-badge&logo=qt&logoColor=white" alt="PySide6 Fluent">
+  <a href="https://p2030209.github.io/jev-chat-windows/"><img src="https://img.shields.io/badge/官网-在线预览-22d3ee?style=for-the-badge&logo=githubpages&logoColor=white" alt="官网"></a>
 </p>
 
 <h1 align="center">JevChat-Windows</h1>
@@ -33,6 +34,8 @@
 需要说明：**本仓库是个人二次开发版，不是上游官方版本**。有问题找本项目管理员，
 不要去打扰上游作者；上游也不为这里的改动背书。
 
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
+
 ## 整体思路：雷霆是怎么加进来的
 
 原来的 Windows 版解决的是"**这一屏**怎么回"：截当前聊天窗口 → 本地 OCR → Jev 判断 →
@@ -55,6 +58,8 @@
 **为什么开源**：这套东西自己用着顺手，就拿出来给同样需要的人。代码 MIT，随便改，别拿去卖。
 用不明白或者有 bug，加 QQ **3245668977** 找管理员——我只是把别人的想法拼得更合身一点，
 真正厉害的是上面那两位作者。
+
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
 
 ## 接下来要做的
 
@@ -115,12 +120,14 @@
 
 **自己上手体验**
 
-下载 Releases 里的 zip → 解压到一个固定目录（整个文件夹一起）→ 双击 `jev-chat-windows.exe`。
+到 [Releases](https://github.com/P2030209/jev-chat-windows/releases) 下载 zip → 解压到一个固定目录（整个文件夹一起）→ 双击 `jev-chat-windows.exe`。
 不用装 Python。第一次启动填两把 API key（判断 / 起草），然后到设置页给要聊的联系人绑定关系，
 没绑的人只判断不回复。
 
 **有问题找管理员**：QQ **3245668977**。反馈请附上版本号（界面底部）、Windows 版本、设置页截图和
 悬浮窗日志；**不要贴聊天原文**，涉及隐私。
+
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
 
 ## 界面预览
 
@@ -139,11 +146,13 @@
 </tr>
 </table>
 
-## 公众号
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
 
-反馈和合作走公众号「恸码奇点」。扫左边的码，或者搜一搜这个名字。
+## 下载、源码与反馈
 
-<p align="center"><img src="docs/wechat-mp.png" width="640" alt="公众号：恸码奇点"></p>
+- **下载**：[Releases](https://github.com/P2030209/jev-chat-windows/releases)（解压即用，不用装 Python）
+- **源码**：[github.com/P2030209/jev-chat-windows](https://github.com/P2030209/jev-chat-windows)
+- **反馈**：GitHub [Issues](https://github.com/P2030209/jev-chat-windows/issues) 或 QQ **3245668977**
 
 聊天窗口旁挂的回复辅助：本地 OCR 读屏上的对话 → Jev 判断意图/情绪 → 给出 3 条候选回复 →
 一键填入输入框。**默认发送永远手动**；只有你手动打开设置里的「自动发送（慎用）」，
@@ -156,7 +165,7 @@
 
 **普通使用直接下载，不用装 Python、不用碰源码。** 后面的「源码运行」是给开发者的。
 
-👉 **[下载最新版](https://github.com/jev-chat/jev-chat-windows/releases/latest)**
+👉 **[下载最新版](https://github.com/P2030209/jev-chat-windows/releases/latest)**
 
 1. 在 Releases 页下载 `jev-chat-windows-vX.Y.Z.zip`（约 146 MB）
 2. 解压到一个固定目录（整个文件夹一起，exe 要用旁边那堆文件）
@@ -240,6 +249,8 @@ RapidOCR 自带的只有中英文模型，韩文整段都是乱码：同一个 K
 <td align="center">采集暂停：不再读取聊天，已有候选照样能填入、能复制</td>
 </tr>
 </table>
+
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
 
 ## 功能
 
@@ -414,7 +425,7 @@ MiniMax、Qwen 走 `/messages`，Grok、GPT 走 `/responses`，选了会失败�
 普通使用请直接用上面的[下载即用](#下载即用推荐)。想改代码、调 prompt、自己打包才需要这一节。
 
 ```bash
-git clone https://github.com/jev-chat/jev-chat-windows.git
+git clone https://github.com/P2030209/jev-chat-windows.git
 cd jev-chat-windows
 python -m venv .venv
 .venv\Scripts\activate
@@ -533,7 +544,6 @@ NOTICE                  出处、第三方组件许可证与商用约束
 docs/KICKOFF.md         最初的需求和硬约束说明
 docs/icon.ico           程序图标，tools/make_icon.py 生成
 docs/ui_*.png           README 里那三张截图，tools/preview_ui.py --screenshot 出的
-docs/wechat-mp.png      公众号「恸码奇点」长条横幅，README 标题下和设置页顶部共用
 config.json             你自己的设置，不进仓库（在 .gitignore 里）
 ```
 
@@ -565,7 +575,6 @@ config.json             你自己的设置，不进仓库（在 .gitignore 里�
 - 界面语言新增简体中文 / 한국어 选择，切换后立即刷新主界面和调试窗口，无需重启；保留未保存输入、
   聊天记录和回复候选
 - 修复打包版语言配置读取路径，以及保存设置、切换或关闭调试视图时丢失语言选择的问题
-- 微信公众号横幅移到设置页顶部
 - 初步支持 KakaoTalk 韩文聊天：新增 Windows 本地 OCR 后端、黄色己方气泡识别、发言人识别和群聊
   置顶公告过滤；需安装韩文 OCR 语言包，使用条件与限制见 [韩文支持说明](docs/KOREAN.md)
 
@@ -579,7 +588,7 @@ config.json             你自己的设置，不进仓库（在 .gitignore 里�
   429 等错误保留服务端返回的原因
 - 修：Win10 1909 上采集不再切换不受支持的光标/边框选项；候选被过滤光时明确报错；长会话名和回复对象名
   在窄窗口按宽度省略，选项里仍保留完整名称
-- 源码安装说明明确 Python 3.10–3.12；README 和设置页加入公众号「恸码奇点」入口
+- 源码安装说明明确 Python 3.10–3.12
 
 **v0.1.9**
 - 设置页「模型」卡片：判断 · Jev（OpenRouter / TypeSafe 直连）+ 起草 · 语言模型（12 家预设 + 自定义
@@ -642,6 +651,18 @@ config.json             你自己的设置，不进仓库（在 .gitignore 里�
 - 候选卡片显示 Jev 概率百分比并按概率排序
 - 设置里加「参考上下文」条数（3~30，默认 10）；key 直接读写注册表 `HKCU\Environment`
 - PyInstaller onedir 打包（`jev.spec` + `build.bat`）+ 推 `v*` tag 自动出 Release
+
+<p align="center"><img src="docs/glow-divider.svg" width="880" alt=""></p>
+
+## 更多项目
+
+同一个作者的其他开源项目：
+
+- **[MoliGod 自动化助手（DF-AutomatedTool）](https://github.com/moligod/DF-AutomatedTool)** ——
+  .NET 8 + WPF + OpenCvSharp + OnnxRuntime 的 Windows 桌面自动化：窗口句柄探测、模板匹配、OCR、
+  逻辑控制流，可视化编排脚本。
+- **更多工具在路上**：围绕「别尬聊」和桌面自动化继续做。关注
+  [P2030209](https://github.com/P2030209?tab=repositories)，或者加 QQ **3245668977** 说你想先要哪个。
 
 ## 致谢
 

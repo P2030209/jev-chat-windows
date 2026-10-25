@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JevChat-Windows · 微信聊天 AI 回复助手</title>
+<meta name="description" content="微信聊天 AI 回复助手：本地 OCR 识别对话，Jev 判断意图与情绪，给出 3 条候选回复；按人绑定关系、按人学习说话风格。职场不冷场，情场不尬聊。">
+<meta name="keywords" content="微信聊天助手,AI回复,聊天机器人,OCR,微信自动化,Jev,博查,DeepSeek,Windows,开源">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JevChat-Windows · 微信聊天 AI 回复助手">
+<meta property="og:description" content="按人绑关系、按人学风格的微信 AI 回复助手。本地 OCR + Jev 判断，3 条候选一键填入。">
+<meta property="og:image" content="https://p2030209.github.io/jev-chat-windows/social-preview.png">
+<meta name="theme-color" content="#05070f">
+<link rel="icon" href="icon.ico">
+<style>
+  :root{
+    --bg:#05070f; --panel:rgba(16,22,40,.72); --line:rgba(120,180,255,.16);
+    --text:#e8f0ff; --muted:#8fa3c8; --cyan:#22d3ee; --violet:#a855f7; --pink:#f472b6;
+    --glow:0 0 24px rgba(34,211,238,.35), 0 0 70px rgba(168,85,247,.22);
+    --radius:18px; --max:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Segoe UI Variable","Segoe UI","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+    line-height:1.75; overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:rgba(34,211,238,.35)}
+
+  /* 背景光晕 */
+  .aurora{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+  .aurora i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.45;mix-blend-mode:screen}
+  .aurora i:nth-child(1){width:520px;height:520px;background:#0ea5e9;left:-140px;top:-120px;animation:drift 18s ease-in-out infinite}
+  .aurora i:nth-child(2){width:480px;height:480px;background:#a855f7;right:-160px;top:8%;animation:drift 22s ease-in-out infinite reverse}
+  .aurora i:nth-child(3){width:420px;height:420px;background:#ec4899;left:35%;bottom:-180px;opacity:.28;animation:drift 26s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.15)}}
+  .grid{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:linear-gradient(rgba(120,180,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(120,180,255,.045) 1px,transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(circle at 50% 20%,#000 0%,transparent 75%);
+    -webkit-mask-image:radial-gradient(circle at 50% 20%,#000 0%,transparent 75%);
+  }
+  .spotlight{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background:radial-gradient(560px circle at var(--mx,50%) var(--my,20%),rgba(34,211,238,.10),transparent 62%);
+  }
+
+  .wrap{width:min(var(--max),calc(100% - 40px));margin:0 auto}
+  section{padding:84px 0;position:relative}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid var(--line);border-radius:999px;padding:5px 14px;background:rgba(34,211,238,.06);
+    box-shadow:0 0 18px rgba(34,211,238,.14) inset;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  h2.title{font-size:clamp(26px,4vw,40px);margin:18px 0 12px;letter-spacing:.02em;
+    background:linear-gradient(100deg,#fff 10%,#8ce7ff 40%,#c4a0ff 65%,#ffa8d8 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 22px rgba(120,200,255,.28));
+  }
+  .lead{color:var(--muted);max-width:760px;font-size:16px}
+
+  /* 顶部导航 */
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);
+    background:linear-gradient(180deg,rgba(5,7,15,.86),rgba(5,7,15,.55));
+    border-bottom:1px solid rgba(120,180,255,.08);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.04em}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:conic-gradient(from 0deg,var(--cyan),var(--violet),var(--pink),var(--cyan));
+    box-shadow:0 0 16px var(--cyan);animation:spin 6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .nav .links{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+  .nav .links a:hover{color:#fff;text-shadow:0 0 12px rgba(120,200,255,.8)}
+  .nav .cta{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;color:#04121a;
+    background:linear-gradient(100deg,var(--cyan),#8be9fd);
+    box-shadow:0 0 20px rgba(34,211,238,.45),0 6px 24px rgba(34,211,238,.25);
+  }
+  .nav .cta:hover{transform:translateY(-1px);box-shadow:0 0 34px rgba(34,211,238,.7),0 10px 30px rgba(34,211,238,.3)}
+  @media(max-width:860px){.nav .links{display:none}}
+
+  /* Hero */
+  .hero{padding:84px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .hero h1{font-size:clamp(40px,6.4vw,72px);line-height:1.06;margin:14px 0 18px;font-weight:900;letter-spacing:-.02em;
+    background:linear-gradient(100deg,#fff 0%,#7de3ff 30%,#c39bff 58%,#ff9ed2 84%,#7de3ff 100%);
+    background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:flow 9s linear infinite;filter:drop-shadow(0 0 30px rgba(120,200,255,.35));
+  }
+  @keyframes flow{to{background-position:220% 0}}
+  .hero p{color:#b7c7e6;font-size:17px;max-width:560px}
+  .hero .btns{display:flex;flex-wrap:wrap;gap:14px;margin:28px 0 26px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:12px;font-weight:700;font-size:15px;
+    transition:.25s;border:1px solid transparent}
+  .btn.primary{color:#031018;background:linear-gradient(100deg,var(--cyan),#a78bfa 60%,var(--pink));
+    box-shadow:0 0 26px rgba(34,211,238,.35),0 12px 36px rgba(168,85,247,.22)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(34,211,238,.6),0 16px 44px rgba(168,85,247,.35)}
+  .btn.ghost{color:#d9e6ff;border-color:rgba(140,200,255,.28);background:rgba(20,30,55,.45)}
+  .btn.ghost:hover{border-color:var(--cyan);box-shadow:0 0 24px rgba(34,211,238,.25) inset,0 0 24px rgba(34,211,238,.18)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:13px}
+  .chips span{border:1px solid var(--line);padding:5px 12px;border-radius:999px;background:rgba(16,24,44,.6)}
+  .chips b{color:#dff4ff;font-weight:600}
+
+  .float{position:relative;perspective:1200px}
+  .float .frame{position:relative;border-radius:24px;padding:10px;background:linear-gradient(150deg,rgba(34,211,238,.5),rgba(168,85,247,.45),rgba(244,114,182,.4));
+    box-shadow:var(--glow),0 40px 90px rgba(0,0,0,.55);animation:hover 7s ease-in-out infinite;transform-style:preserve-3d}
+  .float .frame::after{content:"";position:absolute;inset:-30px;border-radius:36px;z-index:-1;
+    background:radial-gradient(circle at 30% 20%,rgba(34,211,238,.22),transparent 60%),radial-gradient(circle at 75% 80%,rgba(168,85,247,.22),transparent 60%);
+    filter:blur(24px)}
+  .float img{display:block;width:100%;border-radius:16px;background:#0b1020}
+  @keyframes hover{0%,100%{transform:translateY(0) rotateY(-3deg)}50%{transform:translateY(-12px) rotateY(2deg)}}
+  @media(max-width:920px){.hero{grid-template-columns:1fr;gap:36px}.float{max-width:420px;margin:0 auto}}
+
+  /* 卡片 */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .card{position:relative;padding:26px 24px;border-radius:var(--radius);background:var(--panel);
+    border:1px solid var(--line);overflow:hidden;transition:.3s}
+  .card::before{content:"";position:absolute;inset:-2px;border-radius:20px;padding:1px;
+    background:conic-gradient(from var(--a,0deg),transparent 0 55%,rgba(34,211,238,.8) 68%,rgba(168,85,247,.8) 78%,rgba(244,114,182,.8) 88%,transparent 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:0;transition:opacity .3s;animation:rot 5s linear infinite;
+  }
+  .card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 40px rgba(34,211,238,.10)}
+  .card:hover::before{opacity:1}
+  @keyframes rot{to{--a:360deg}}
+  @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+  .card .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+    background:linear-gradient(140deg,rgba(34,211,238,.18),rgba(168,85,247,.18));border:1px solid var(--line);
+    box-shadow:0 0 24px rgba(34,211,238,.18) inset}
+  .card h3{margin:16px 0 8px;font-size:18px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  @media(max-width:920px){.cards{grid-template-columns:1fr}}
+
+  /* 功能网格 */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}
+  .feat{padding:18px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(14,20,38,.6);transition:.25s}
+  .feat:hover{border-color:rgba(34,211,238,.45);box-shadow:0 0 28px rgba(34,211,238,.12) inset,0 10px 30px rgba(0,0,0,.35);transform:translateY(-3px)}
+  .feat strong{display:block;font-size:15px;margin-bottom:4px}
+  .feat span{color:var(--muted);font-size:13px}
+  @media(max-width:920px){.grid4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid4{grid-template-columns:1fr}}
+
+  /* 截图 */
+  .shots{display:grid;grid-template-columns:.95fr 1.05fr;gap:26px;margin-top:34px;align-items:start}
+  .shot{border-radius:18px;padding:8px;background:linear-gradient(150deg,rgba(34,211,238,.4),rgba(168,85,247,.35));
+    box-shadow:0 0 34px rgba(34,211,238,.18),0 24px 60px rgba(0,0,0,.5)}
+  .shot img{display:block;width:100%;border-radius:12px;background:#0b1020}
+  .shot .cap{margin-top:12px;color:var(--muted);font-size:13px;text-align:center}
+  @media(max-width:920px){.shots{grid-template-columns:1fr}}
+
+  /* 步骤 */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px;counter-reset:s}
+  .step{position:relative;padding:24px;border-radius:16px;border:1px solid var(--line);background:var(--panel)}
+  .step::before{counter-increment:s;content:"0" counter(s);position:absolute;top:14px;right:18px;font-size:34px;font-weight:900;
+    color:transparent;-webkit-text-stroke:1px rgba(120,200,255,.35)}
+  .step h3{margin:0 0 6px;font-size:16px}
+  .step p{margin:0;color:var(--muted);font-size:14px}
+  @media(max-width:920px){.steps{grid-template-columns:1fr}}
+
+  /* 路线图 */
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+  .road .item{padding:24px;border-radius:16px;border:1px dashed rgba(120,200,255,.25);background:rgba(12,18,34,.55);position:relative}
+  .road .tag{position:absolute;top:14px;right:14px;font-size:11px;letter-spacing:.1em;color:#ffd1ea;border:1px solid rgba(244,114,182,.35);
+    padding:2px 8px;border-radius:999px;background:rgba(244,114,182,.10);box-shadow:0 0 16px rgba(244,114,182,.18)}
+  .road h3{margin:0 0 8px;font-size:17px}
+  .road p{margin:0;color:var(--muted);font-size:14px}
+  @media(max-width:920px){.road{grid-template-columns:1fr}}
+
+  /* FAQ */
+  details{margin-top:12px;padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:rgba(14,20,38,.55)}
+  details[open]{border-color:rgba(34,211,238,.35);box-shadow:0 0 26px rgba(34,211,238,.08) inset}
+  summary{cursor:pointer;font-weight:600;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";float:right;color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+  details[open] summary::after{content:"−"}
+  details p{color:var(--muted);margin:10px 0 0;font-size:14.5px}
+
+  /* 更多项目 */
+  .projects{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}
+  .proj{display:block;padding:26px;border-radius:18px;border:1px solid var(--line);background:var(--panel);transition:.3s;position:relative;overflow:hidden}
+  .proj::after{content:"";position:absolute;inset:0;background:radial-gradient(420px circle at 20% 0%,rgba(34,211,238,.12),transparent 60%);opacity:0;transition:.3s}
+  .proj:hover{transform:translateY(-4px);border-color:rgba(34,211,238,.4);box-shadow:0 0 36px rgba(34,211,238,.12)}
+  .proj:hover::after{opacity:1}
+  .proj small{color:var(--cyan);letter-spacing:.14em;font-size:11px}
+  .proj h3{margin:8px 0 8px;font-size:19px}
+  .proj p{margin:0;color:var(--muted);font-size:14px}
+  .proj .go{margin-top:14px;display:inline-block;font-size:13px;color:#dff4ff;border-bottom:1px solid rgba(34,211,238,.4)}
+  @media(max-width:760px){.projects{grid-template-columns:1fr}}
+
+  /* CTA 收尾 */
+  .final{margin:20px auto 0;padding:46px 32px;border-radius:24px;text-align:center;position:relative;overflow:hidden;
+    background:linear-gradient(140deg,rgba(34,211,238,.10),rgba(168,85,247,.12),rgba(244,114,182,.10));
+    border:1px solid rgba(140,200,255,.22);box-shadow:var(--glow)}
+  .final::before{content:"";position:absolute;inset:-60%;background:conic-gradient(from 0deg,transparent 0 60%,rgba(34,211,238,.35) 72%,rgba(168,85,247,.35) 82%,transparent 92%);
+    animation:spin 14s linear infinite;opacity:.35}
+  .final > *{position:relative}
+  .final h2{font-size:clamp(24px,4vw,36px);margin:0 0 10px}
+  .final p{color:#c2d2ec;margin:0 0 24px}
+  .qq{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--muted);font-size:14px}
+  .qq b{color:#eaf6ff;text-shadow:0 0 14px rgba(34,211,238,.7)}
+
+  footer{padding:40px 0 56px;color:#7d90b3;font-size:13px;border-top:1px solid rgba(120,180,255,.08);margin-top:30px}
+  footer .row{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+  footer a:hover{color:#fff;text-shadow:0 0 10px rgba(34,211,238,.8)}
+
+  /* 入场动画 */
+  .reveal{opacity:0;transform:translateY(26px);transition:.8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i><i></i></div>
+<div class="grid"></div>
+<div class="spotlight" id="spot"></div>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top"><span class="dot"></span>JevChat-Windows</a>
+    <nav class="links">
+      <a href="#features">功能</a>
+      <a href="#shots">界面</a>
+      <a href="#start">上手</a>
+      <a href="#roadmap">路线图</a>
+      <a href="#faq">问答</a>
+      <a href="#projects">更多项目</a>
+    </nav>
+    <a class="cta" href="https://github.com/P2030209/jev-chat-windows" target="_blank" rel="noopener">GitHub 源码</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <span class="eyebrow">WeChat AI Reply Assistant</span>
+      <h1>聊天不用再<br>憋半天</h1>
+      <p>本地 OCR 看懂这一屏对话，Jev 判断对方的意图和情绪，再给出 3 条像你自己会说的话。<br>
+         <b style="color:#dff4ff">按人绑关系、按人学风格</b>——对恋人、朋友、同事，说的不是同一套话。</p>
+      <div class="btns">
+        <a class="btn primary" href="https://github.com/P2030209/jev-chat-windows/releases" target="_blank" rel="noopener">⬇ 下载最新版</a>
+        <a class="btn ghost" href="https://github.com/P2030209/jev-chat-windows" target="_blank" rel="noopener">✦ 查看源码</a>
+      </div>
+      <div class="chips">
+        <span><b>3</b> 条候选</span>
+        <span><b>0</b> 上传 · 全程本机</span>
+        <span><b>MIT</b> 开源</span>
+        <span>Windows 10 / 11</span>
+      </div>
+    </div>
+    <div class="float">
+      <div class="frame"><img src="screenshots/ui_reply.png" alt="回复建议面板截图"></div>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <span class="eyebrow">Why it works</span>
+      <h2 class="title">同一个人，不同的人，说不同的话</h2>
+      <p class="lead">大多数「AI 代聊」只有一套人设，回谁都是一个味儿。这里的做法是：先把人分开，再谈怎么回。</p>
+      <div class="cards">
+        <div class="card reveal">
+          <div class="ico">🎯</div>
+          <h3>关系按人绑</h3>
+          <p>每个联系人单独选关系：恋人、暧昧、追求、冷战、分手、复合。没绑关系的人只判断、不回复——宁可不说，也不乱说。</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico">🗣️</div>
+          <h3>风格按人学</h3>
+          <p>从本机微信库里抽「我发给 TA」的最近消息，蒸馏成句长、口头禅、表情习惯。30 天过期重学，切人自动换。</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico">🧠</div>
+          <h3>上下文按人存</h3>
+          <p>每个会话独立记录、独立候选，互不串味。多会话后台轮询，谁的手机响了就分析谁，当前窗口仍走 OCR。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="more">
+    <div class="wrap">
+      <span class="eyebrow">Features</span>
+      <h2 class="title">把「尬聊」拆成可执行的步骤</h2>
+      <div class="grid4">
+        <div class="feat"><strong>离线 OCR</strong><span>截当前窗口本地识别，不上传聊天内容</span></div>
+        <div class="feat"><strong>Jev 判断</strong><span>七道判断题：意图、情绪、边界、下一步</span></div>
+        <div class="feat"><strong>候选排序</strong><span>3 条起草，再由 Jev 排胜率，点一条填入</span></div>
+        <div class="feat"><strong>手动优先</strong><span>默认不替你发送；自动发送开关默认关</span></div>
+        <div class="feat"><strong>多会话监控</strong><span>每 8 秒轮询解密库，新消息排队分析</span></div>
+        <div class="feat"><strong>库里取风格</strong><span>增量解密 message/contact/session，只在本机</span></div>
+        <div class="feat"><strong>多模型来源</strong><span>博查 Jev / DeepSeek / OpenAI / Anthropic / Gemini</span></div>
+        <div class="feat"><strong>绿色免安装</strong><span>解压即用，onedir 打包，不用装 Python</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shots">
+    <div class="wrap">
+      <span class="eyebrow">Screenshots</span>
+      <h2 class="title">长这样</h2>
+      <p class="lead">截图里的联系人名已替换为「示例联系人」，聊天内容也换成了示例消息，避免泄露真实会话。</p>
+      <div class="shots">
+        <div class="shot reveal">
+          <img src="screenshots/ui_reply.png" alt="回复建议面板">
+          <div class="cap">回复建议：当前会话 / 对方最近说 / 候选卡片 / 展开聊天记录</div>
+        </div>
+        <div class="shot reveal">
+          <img src="screenshots/ui_settings.png" alt="设置页">
+          <div class="cap">设置页：按人绑关系、各类开关、模型配置</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap">
+      <span class="eyebrow">Quick start</span>
+      <h2 class="title">三步开始</h2>
+      <div class="steps">
+        <div class="step reveal">
+          <h3>下载解压</h3>
+          <p>从 <a href="https://github.com/P2030209/jev-chat-windows/releases" style="color:#8ce7ff">Releases</a> 拿 zip，解压到固定目录，双击 <code>jev-chat-windows.exe</code>。</p>
+        </div>
+        <div class="step reveal">
+          <h3>配好模型</h3>
+          <p>设置页填 Jev（判断）和起草模型的两把 key。博查一把 key 就能通吃判断 + 起草。</p>
+        </div>
+        <div class="step reveal">
+          <h3>绑一个人试试</h3>
+          <p>在「按人设关系」里输入微信显示名，选关系点绑定。之后对话框旁边就会出候选。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap">
+      <span class="eyebrow">Roadmap</span>
+      <h2 class="title">接下来要做的</h2>
+      <p class="lead">这套东西不会停在「微信 + Windows」。</p>
+      <div class="road">
+        <div class="item reveal"><span class="tag">PLANNING</span><h3>狗头军师</h3><p>不替你说话，只在旁边拆局：TA 这句话什么意图、你哪句说错了、下一步怎么接。想自己说又怕说错时用。</p></div>
+        <div class="item reveal"><span class="tag">IN PROGRESS</span><h3>iOS / Android</h3><p>手机上也能用同一套「按人绑关系 + 按人学风格」，通勤路上也能接得住。</p></div>
+        <div class="item reveal"><span class="tag">ALWAYS</span><h3>职场不冷场，情场不尬聊</h3><p>该接的话接得住，该退的时候体面退。少一点「在吗」，多一点好好说话。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="title">先把顾虑说清楚</h2>
+      <details open><summary>聊天内容会上传吗？</summary><p>OCR 在本机跑，识别结果只发给模型接口用于生成回复；本地库解密、风格学习全程在本机，不上传聊天记录。</p></details>
+      <details><summary>会不会自己乱发消息？</summary><p>默认不会。候选只填进输入框，回车由你按。只有你手动打开「自动发送（慎用）」才会自动发送，默认关闭。</p></details>
+      <details><summary>为什么没绑关系就不回复？</summary><p>「只跟绑定了关系的人聊天」默认开启：没绑关系的会话只做判断，不起草、不弹候选、不自动发送。避免把对 A 的话回给 B。</p></details>
+      <details><summary>收费吗？</summary><p>代码 MIT，免费用、随便改，别拿去卖。模型调用按各家 API 自己计费。</p></details>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <span class="eyebrow">More projects</span>
+      <h2 class="title">同一双手做的其他东西</h2>
+      <div class="projects">
+        <a class="proj" href="https://github.com/moligod/DF-AutomatedTool" target="_blank" rel="noopener">
+          <small>MOLIGOD · C# / WPF</small>
+          <h3>MoliGod 自动化助手</h3>
+          <p>基于 .NET 8、OpenCvSharp、OnnxRuntime 的 Windows 桌面自动化：窗口句柄探测、模板匹配、OCR、逻辑控制流，可视化编排自动化脚本。</p>
+          <span class="go">去看看 →</span>
+        </a>
+        <a class="proj" href="https://github.com/P2030209?tab=repositories" target="_blank" rel="noopener">
+          <small>MORE COMING</small>
+          <h3>更多工具在路上</h3>
+          <p>围绕「别尬聊」和桌面自动化继续做。关注账号，或者加 QQ 3245668977 说你想先要哪个。</p>
+          <span class="go">全部仓库 →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="final">
+        <h2>先把这一句接住</h2>
+        <p>不用再对着对话框删了又打。下载、绑一个人、试一次就知道。</p>
+        <a class="btn primary" href="https://github.com/P2030209/jev-chat-windows" target="_blank" rel="noopener">✦ 去 GitHub 看看</a>
+        <div class="qq">用不明白 / 有 bug：QQ <b>3245668977</b></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <div>JevChat-Windows · 个人二次开发版，非上游官方版本 · MIT License</div>
+    <div>基于 <a href="https://github.com/Finderchangchang" target="_blank" rel="noopener">Finderchangchang/jev-chat-JARVIS</a> 与 <a href="https://github.com/jev-chat/jev-chat-windows" target="_blank" rel="noopener">jev-chat/jev-chat-windows</a> 二次开发</div>
+  </div>
+</footer>
+
+<script>
+  // 鼠标光斑
+  const spot = document.getElementById('spot');
+  addEventListener('pointermove', e => {
+    document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+    document.documentElement.style.setProperty('--my', e.clientY + 'px');
+  }, {passive:true});
+
+  // 滚动入场
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // 卡片光边角度跟随鼠标
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width/2) / r.width;
+      const dy = (e.clientY - r.top - r.height/2) / r.height;
+      card.style.setProperty('--a', (Math.atan2(dy, dx) * 57.3 + 90).toFixed(0) + 'deg');
+    });
+  });
+</script>
+</body>
+</html>

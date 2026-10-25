@@ -43,7 +43,6 @@ for rel in _keep_rels:
             shutil.copy2(src, tmp)
         _keep.append((rel, tmp))
 datas, binaries = [], []
-datas += [("docs/wechat-mp.png", "docs")]  # 设置页底部的公众号长条横幅
 datas += [("tools/wx_extract.py", "tools")]  # 微信库解密（wx_refresh 从 _MEIPASS/tools 加载）
 for pkg in (
     "rapidocr_onnxruntime",  # .onnx 模型 + config.yaml 是包数据，不收就是启动即炸

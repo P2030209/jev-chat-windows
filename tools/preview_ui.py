@@ -209,7 +209,7 @@ def main() -> int:
             ov.set_chat(_CHAT)
             ov.show(_RESULT)
             ov.set_status("演示模式：已生成 3 条建议，点击填入仅模拟操作。", kind="success")
-            ov.set_update("9.9.9", "https://github.com/jev-chat/jev-chat-windows/releases/latest")
+            ov.set_update("9.9.9", "https://github.com/P2030209/jev-chat-windows/releases/latest")
             if args.state == "loading":
                 ov.set_busy(True)
                 ov.set_status("演示模式：正在为最新消息生成建议…", kind="busy")
