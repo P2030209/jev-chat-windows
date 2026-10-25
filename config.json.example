@@ -1,0 +1,20 @@
+{
+  "relationship": "friends",
+  "context": 10,
+  "style": "",
+  "jev_provider": "bocha",
+  "jev_model": "",
+  "draft_provider": "bocha",
+  "draft_model": "",
+  "draft_base_url": "",
+  "reply_target": false,
+  "thinking": false,
+  "check_update": true,
+  "debug_view": false,
+  "read_latest": false,
+  "auto_send": false,
+  "bound_only": true,
+  "relationships": {},
+  "styles": {},
+  "lang": "zh"
+}

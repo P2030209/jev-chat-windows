@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="240" viewBox="0 0 880 240" role="img" aria-label="JevChat-Windows 微信聊天 AI 回复助手">
+  <defs>
+    <linearGradient id="neon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee">
+        <animate attributeName="stop-color" values="#22d3ee;#a855f7;#f472b6;#22d3ee" dur="9s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stop-color="#a855f7">
+        <animate attributeName="stop-color" values="#a855f7;#f472b6;#38bdf8;#a855f7" dur="9s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stop-color="#f472b6">
+        <animate attributeName="stop-color" values="#f472b6;#38bdf8;#22d3ee;#f472b6" dur="9s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="0%" r="85%">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#0b1020" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="880" height="240" rx="20" fill="#0b1020"/>
+  <rect width="880" height="240" rx="20" fill="url(#halo)"/>
+
+  <g fill="#38bdf8">
+    <circle cx="90" cy="60" r="2.5" opacity="0.7">
+      <animate attributeName="opacity" values="0.15;0.85;0.15" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="780" cy="52" r="2" opacity="0.6">
+      <animate attributeName="opacity" values="0.7;0.1;0.7" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="820" cy="170" r="3" opacity="0.5">
+      <animate attributeName="opacity" values="0.1;0.8;0.1" dur="6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="66" cy="178" r="2" opacity="0.5">
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="5.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="440" cy="34" r="1.8" opacity="0.5">
+      <animate attributeName="opacity" values="0.2;0.9;0.2" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <text x="440" y="108" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif"
+        font-size="58" font-weight="800" fill="url(#neon)" filter="url(#glow)" letter-spacing="1">JevChat-Windows</text>
+
+  <text x="440" y="150" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif"
+        font-size="20" fill="#cbd5e1">微信聊天 AI 回复助手 · 按人绑定关系 · 按人学说话风格</text>
+
+  <text x="440" y="182" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif"
+        font-size="15" fill="#7dd3fc">本地 OCR · Jev 判断 · 3 条候选 · 一键填入</text>
+
+  <text x="440" y="212" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, PingFang SC, sans-serif"
+        font-size="13" fill="#94a3b8">基于 Finderchangchang/jev-chat-JARVIS 与 jev-chat/jev-chat-windows 二次开发 · 管理员 QQ 3245668977</text>
+</svg>
