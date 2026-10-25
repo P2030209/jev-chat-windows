@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/badge/Python-3.10%20~%203.12-f472b6?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10-3.12">
   <img src="https://img.shields.io/badge/UI-PySide6%20%2B%20Fluent-38bdf8?style=for-the-badge&logo=qt&logoColor=white" alt="PySide6 Fluent">
   <a href="https://p2030209.github.io/jev-chat-windows/"><img src="https://img.shields.io/badge/官网-在线预览-22d3ee?style=for-the-badge&logo=githubpages&logoColor=white" alt="官网"></a>
+  <a href="https://github.com/P2030209/jev-chat-windows/stargazers"><img src="https://img.shields.io/github/stars/P2030209/jev-chat-windows?style=for-the-badge&logo=github&color=a855f7&logoColor=white" alt="Stars"></a>
 </p>
 
 <h1 align="center">JevChat-Windows</h1>
